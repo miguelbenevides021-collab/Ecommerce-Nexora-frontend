@@ -1,9 +1,10 @@
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Menu, ShoppingCart, User, X, Zap } from "lucide-react"
+import { LayoutDashboard, LogOut, Menu, Package, ShoppingCart, User, X, Zap } from "lucide-react"
 import { navLinks } from "@/data/navigation"
 import { SearchBar } from "@/components/layout/SearchBar"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/context/AuthContext"
 import { cn } from "@/lib/utils"
 
 function isLinkActive(href: string, pathname: string, search: string) {
@@ -42,6 +43,7 @@ function NexoraLogo({ className }: { className?: string }) {
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { isAuthenticated, isAdmin, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -84,25 +86,50 @@ export function Navbar() {
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
+            {isAdmin ? (
+              <Button
+                render={<Link to="/admin" />}
+                variant="ghost"
+                size="icon"
+                className="hidden text-muted-foreground hover:text-nexora sm:inline-flex"
+                aria-label="Painel admin"
+              >
+                <LayoutDashboard className="size-5" />
+              </Button>
+            ) : null}
+
             <Button
+              render={
+                <Link to={isAuthenticated ? "/pedidos" : "/login"} />
+              }
               variant="ghost"
               size="icon"
               className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
-              aria-label="Minha conta"
+              aria-label={isAuthenticated ? "Meus pedidos" : "Entrar"}
             >
               <User className="size-5" />
             </Button>
 
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
+                aria-label="Sair"
+                onClick={logout}
+              >
+                <LogOut className="size-5" />
+              </Button>
+            ) : null}
+
             <Button
+              render={<Link to="/carrinho" />}
               variant="ghost"
               size="icon"
               className="relative text-muted-foreground hover:text-foreground"
               aria-label="Carrinho de compras"
             >
               <ShoppingCart className="size-5" />
-              <span className="absolute -top-0.5 -right-0.5 flex size-4.5 items-center justify-center rounded-full bg-nexora text-[10px] font-bold text-primary-foreground">
-                2
-              </span>
             </Button>
 
             <Button
@@ -132,7 +159,7 @@ export function Navbar() {
       <div
         className={cn(
           "overflow-hidden border-t border-border/40 transition-all duration-300 lg:hidden",
-          mobileOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          mobileOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
         )}
       >
         <nav
@@ -163,14 +190,49 @@ export function Navbar() {
               </Link>
             )
           })}
-          <a
-            href="#"
+          {isAdmin ? (
+            <Link
+              to="/admin"
+              onClick={() => setMobileOpen(false)}
+              className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-nexora hover:bg-nexora/10"
+            >
+              <LayoutDashboard className="size-4" />
+              Painel admin
+            </Link>
+          ) : null}
+          <Link
+            to={isAuthenticated ? "/pedidos" : "/login"}
             onClick={() => setMobileOpen(false)}
             className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
-            <User className="size-4" />
-            Minha conta
-          </a>
+            {isAuthenticated ? (
+              <Package className="size-4" />
+            ) : (
+              <User className="size-4" />
+            )}
+            {isAuthenticated ? "Meus pedidos" : "Entrar"}
+          </Link>
+          {!isAuthenticated ? (
+            <Link
+              to="/registro"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              Criar conta
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                logout()
+                setMobileOpen(false)
+              }}
+              className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+            >
+              <LogOut className="size-4" />
+              Sair
+            </button>
+          )}
         </nav>
       </div>
     </header>

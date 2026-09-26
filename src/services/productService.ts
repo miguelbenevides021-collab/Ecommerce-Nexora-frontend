@@ -1,6 +1,5 @@
+import { API_URL } from "@/lib/api";
 import type { ApiProduct } from "@/types";
-
-const API_URL = "http://localhost:3000";
 
 export async function getProducts(): Promise<ApiProduct[]> {
   const response = await fetch(`${API_URL}/products`);
