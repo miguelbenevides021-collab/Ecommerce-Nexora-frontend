@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const adminLinks = [
   { to: "/admin/produtos", label: "Produtos", icon: Package },
   { to: "/admin/categorias", label: "Categorias", icon: Tags },
-  { to: "/admin/pedidos", label: "Pedidos", icon: ShoppingBag },
+  { to: "/admin/orders", label: "Pedidos", icon: ShoppingBag },
 ];
 
 export function AdminLayout() {
@@ -46,7 +46,7 @@ export function AdminLayout() {
       <Outlet />
 
       <p className="mt-10 text-xs text-muted-foreground">
-        Ações de criação, edição e status serão conectadas às rotas{" "}
+        As demais ações administrativas serão conectadas às rotas{" "}
         <code className="text-nexora">/admin/*</code>.{" "}
         <Link to="/" className="underline hover:text-foreground">
           Voltar à loja

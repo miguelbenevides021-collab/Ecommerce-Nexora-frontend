@@ -1,10 +1,33 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { featuredProducts } from "../../data/products";
 import { ProductCard } from "@/components/landing/ProductCard";
 import { Button } from "@/components/ui/button";
+import { getProducts } from "@/services/productService";
+import { adaptProduct } from "@/lib/adaptProduct";
+import type { Product } from "@/types";
 
 export function ProductSection() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    void getProducts()
+      .then((products) => {
+        if (active) setFeaturedProducts(products.slice(0, 4).map(adaptProduct));
+      })
+      .catch(() => {
+        if (active) setFeaturedProducts([]);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <section
       id="ofertas"
@@ -35,9 +58,13 @@ export function ProductSection() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {loading ? <p className="text-sm text-muted-foreground">Carregando produtos...</p> : null}
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
+          {!loading && featuredProducts.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Não foi possível carregar os produtos agora.</p>
+          ) : null}
         </div>
       </div>
     </section>

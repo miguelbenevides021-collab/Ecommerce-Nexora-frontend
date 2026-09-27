@@ -8,6 +8,8 @@ export interface NavLink {
 
 export interface Category {
   id: string;
+  categoryId: number;
+  slug: string;
   name: string;
   description: string;
   icon: LucideIcon;
@@ -16,6 +18,7 @@ export interface Category {
 
 export interface Product {
   id: string;
+  categoryId?: number;
   name: string;
   category: string;
   image: string;
@@ -48,6 +51,10 @@ export interface ApiProduct {
   stock: number;
   brand: string;
   imageUrl: string | null;
+  oldPrice?: number | string;
+  discount?: number;
+  rating?: number;
+  reviewCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,6 +69,8 @@ export type OrderStatus =
   | "CANCELED";
 
 export interface Address {
+  id?: number;
+  iduser?: number;
   rua: string;
   numero: string;
   bairro: string;
@@ -69,6 +78,8 @@ export interface Address {
   cep: string;
   estado: string;
   complemento?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface RegisterPayload {
@@ -95,7 +106,48 @@ export interface User {
   cpf: string;
   role: UserRole;
   createdAt: string;
+  updatedAt?: string;
   address: Address[];
+  cart?: ProfileCart[];
+  order?: ProfileOrder[];
+}
+
+export interface ProfileProductSummary {
+  id: number;
+  name: string;
+  price: string;
+  imageUrl: string | null;
+}
+
+export interface ProfileCartItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  product: ProfileProductSummary;
+}
+
+export interface ProfileCart {
+  id: number;
+  cartItem: ProfileCartItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProfileOrderItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: string;
+  product: ProfileProductSummary;
+}
+
+export interface ProfileOrder {
+  id: number;
+  status: OrderStatus;
+  total: string;
+  orderItem: ProfileOrderItem[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface JwtPayload {
@@ -124,6 +176,8 @@ export interface Cart {
   id?: number;
   userId?: number;
   cartItem: CartItem[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface OrderItem {
@@ -141,4 +195,6 @@ export interface Order {
   total: string;
   orderItem: OrderItem[];
   user?: User;
+  createdAt?: string;
+  updatedAt?: string;
 }

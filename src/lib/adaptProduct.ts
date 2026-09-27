@@ -1,11 +1,15 @@
 // src/lib/adaptProduct.ts
 import type { ApiProduct, Product } from "@/types";
+import { categories } from "@/data/categories";
 
 export function adaptProduct(apiProduct: ApiProduct): Product {
   return {
     id: String(apiProduct.id),
+    categoryId: apiProduct.categoriaId,
     name: apiProduct.name,
-    category: "Categoria", // ainda não temos o nome da categoria vindo da API
+    category:
+      categories.find((category) => category.categoryId === apiProduct.categoriaId)
+        ?.name ?? "Categoria",
     image: apiProduct.imageUrl ?? "",
     rating: 0, // não existe na API ainda
     reviewCount: 0,

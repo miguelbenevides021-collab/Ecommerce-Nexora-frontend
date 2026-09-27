@@ -28,7 +28,7 @@ export function SearchBar({
     event.preventDefault()
     const query = value.trim()
     const next = new URLSearchParams(
-      location.pathname === "/produtos" ? searchParams : undefined
+      location.pathname.startsWith("/produtos") ? searchParams : undefined
     )
 
     if (query) {
@@ -38,7 +38,10 @@ export function SearchBar({
     }
 
     const search = next.toString()
-    navigate(search ? `/produtos?${search}` : "/produtos")
+    const productsPath = location.pathname.startsWith("/produtos/")
+      ? location.pathname
+      : "/produtos"
+    navigate(search ? `${productsPath}?${search}` : productsPath)
   }
 
   return (

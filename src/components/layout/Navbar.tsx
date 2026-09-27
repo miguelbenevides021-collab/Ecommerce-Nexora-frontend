@@ -1,10 +1,12 @@
 import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { LayoutDashboard, LogOut, Menu, Package, ShoppingCart, User, X, Zap } from "lucide-react"
+import { ChevronDown, LayoutDashboard, LogOut, Menu, ShoppingCart, User, X, Zap } from "lucide-react"
 import { navLinks } from "@/data/navigation"
+import { categories } from "@/data/categories"
 import { SearchBar } from "@/components/layout/SearchBar"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/context/AuthContext"
+import { useCart } from "@/context/CartContext"
 import { cn } from "@/lib/utils"
 
 function isLinkActive(href: string, pathname: string, search: string) {
@@ -42,8 +44,11 @@ function NexoraLogo({ className }: { className?: string }) {
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false)
   const location = useLocation()
   const { isAuthenticated, isAdmin, logout } = useAuth()
+  const { count: cartCount } = useCart()
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -83,6 +88,92 @@ export function Navbar() {
                 </Link>
               )
             })}
+            <Link
+              to="/produtos"
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                location.pathname === "/produtos" && !location.search.includes("ofertas=1")
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              )}
+            >
+              Produtos
+            </Link>
+            <div
+              className="relative"
+              onMouseEnter={() => setCategoriesOpen(true)}
+              onMouseLeave={() => setCategoriesOpen(false)}
+              onFocus={() => setCategoriesOpen(true)}
+              onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                  setCategoriesOpen(false)
+                }
+              }}
+            >
+              <button
+                type="button"
+                aria-expanded={categoriesOpen}
+                aria-haspopup="true"
+                onClick={() => setCategoriesOpen((open) => !open)}
+                className={cn(
+                  "flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  location.pathname === "/produtos" && !location.search.includes("ofertas=1")
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  categoriesOpen && "bg-secondary text-foreground",
+                )}
+              >
+                Categorias
+                <ChevronDown className={cn("size-4 transition-transform", categoriesOpen && "rotate-180")} />
+              </button>
+              {categoriesOpen ? (
+                <div className="absolute left-1/2 top-full z-50 w-[min(48rem,calc(100vw-2rem))] -translate-x-1/2 pt-3">
+                  <div className="rounded-2xl border border-border/60 bg-background/95 p-5 shadow-2xl backdrop-blur-xl md:p-6">
+                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                      {[
+                        { title: "Hardware", ids: ["processadores", "placas-video", "placas-mae", "memoria-ram", "armazenamento", "gabinetes", "fontes", "coolers"] },
+                        { title: "Periféricos e monitores", ids: ["perifericos", "monitores", "acessorios"] },
+                        { title: "Computadores", ids: ["pc-gamer"] },
+                      ].map((group) => (
+                        <div key={group.title}>
+                          <p className="mb-3 text-xs font-semibold tracking-wider text-nexora uppercase">{group.title}</p>
+                          <div className="flex flex-col gap-1">
+                            {categories
+                              .filter((category) => group.ids.includes(category.id))
+                              .map((category) => {
+                                const Icon = category.icon
+                                return (
+                                  <Link
+                                    key={category.id}
+                                    to={category.href}
+                                    onClick={() => setCategoriesOpen(false)}
+                                    className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-secondary/70"
+                                  >
+                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-nexora/20 bg-nexora/5 text-nexora transition-colors group-hover:bg-nexora/10">
+                                      <Icon className="size-4" />
+                                    </span>
+                                    <span className="min-w-0">
+                                      <span className="block text-sm font-medium text-foreground">{category.name}</span>
+                                      <span className="block truncate text-xs text-muted-foreground">{category.description}</span>
+                                    </span>
+                                  </Link>
+                                )
+                              })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Link
+                      to="/produtos"
+                      onClick={() => setCategoriesOpen(false)}
+                      className="mt-5 flex items-center justify-between border-t border-border/50 pt-4 text-sm font-medium text-nexora transition-colors hover:text-foreground"
+                    >
+                      Ver todos os produtos <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                </div>
+              ) : null}
+            </div>
           </nav>
 
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
@@ -100,12 +191,12 @@ export function Navbar() {
 
             <Button
               render={
-                <Link to={isAuthenticated ? "/pedidos" : "/login"} />
+                <Link to={isAuthenticated ? "/perfil" : "/login"} />
               }
               variant="ghost"
               size="icon"
               className="hidden text-muted-foreground hover:text-foreground sm:inline-flex"
-              aria-label={isAuthenticated ? "Meus pedidos" : "Entrar"}
+                aria-label={isAuthenticated ? "Meu perfil" : "Entrar"}
             >
               <User className="size-5" />
             </Button>
@@ -127,9 +218,14 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               className="relative text-muted-foreground hover:text-foreground"
-              aria-label="Carrinho de compras"
+              aria-label={`Carrinho de compras${cartCount ? `, ${cartCount} itens` : ""}`}
             >
               <ShoppingCart className="size-5" />
+              {cartCount > 0 ? (
+                <span className="absolute -top-1 -right-1 flex min-w-4 items-center justify-center rounded-full bg-nexora px-1 text-[10px] leading-4 font-semibold text-primary-foreground">
+                  {cartCount > 99 ? "99+" : cartCount}
+                </span>
+              ) : null}
             </Button>
 
             <Button
@@ -159,7 +255,7 @@ export function Navbar() {
       <div
         className={cn(
           "overflow-hidden border-t border-border/40 transition-all duration-300 lg:hidden",
-          mobileOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0"
+          mobileOpen ? "max-h-[70rem] opacity-100" : "max-h-0 opacity-0"
         )}
       >
         <nav
@@ -190,6 +286,50 @@ export function Navbar() {
               </Link>
             )
           })}
+          <Link
+            to="/produtos"
+            onClick={() => setMobileOpen(false)}
+            className={cn(
+              "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+              location.pathname === "/produtos" && !location.search.includes("ofertas=1")
+                ? "bg-secondary text-foreground"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+            )}
+          >
+            Produtos
+          </Link>
+          <div>
+            <button
+              type="button"
+              aria-expanded={mobileCategoriesOpen}
+              onClick={() => setMobileCategoriesOpen((open) => !open)}
+              className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              Categorias
+              <ChevronDown className={cn("size-4 transition-transform", mobileCategoriesOpen && "rotate-180")} />
+            </button>
+            {mobileCategoriesOpen ? (
+              <div className="ml-3 mt-1 flex flex-col gap-1 border-l border-border/60 pl-3">
+                {categories.map((category) => {
+                  const Icon = category.icon
+                  return (
+                    <Link
+                      key={category.id}
+                      to={category.href}
+                      onClick={() => {
+                        setMobileOpen(false)
+                        setMobileCategoriesOpen(false)
+                      }}
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                    >
+                      <Icon className="size-4 text-nexora" />
+                      {category.name}
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : null}
+          </div>
           {isAdmin ? (
             <Link
               to="/admin"
@@ -201,16 +341,16 @@ export function Navbar() {
             </Link>
           ) : null}
           <Link
-            to={isAuthenticated ? "/pedidos" : "/login"}
+            to={isAuthenticated ? "/perfil" : "/login"}
             onClick={() => setMobileOpen(false)}
             className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
           >
             {isAuthenticated ? (
-              <Package className="size-4" />
+              <User className="size-4" />
             ) : (
               <User className="size-4" />
             )}
-            {isAuthenticated ? "Meus pedidos" : "Entrar"}
+            {isAuthenticated ? "Meu perfil" : "Entrar"}
           </Link>
           {!isAuthenticated ? (
             <Link

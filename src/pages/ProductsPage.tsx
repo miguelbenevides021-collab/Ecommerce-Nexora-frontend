@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { PackageSearch, SlidersHorizontal, Zap } from "lucide-react";
 import { getProducts } from "@/services/productService";
 import { adaptProduct } from "@/lib/adaptProduct";
@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/landing/ProductCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { categories } from "@/data/categories";
 
 const sortOptions = [
   { value: "destaque", label: "Em destaque" },
@@ -23,6 +24,8 @@ export function ProductsPage() {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { categorySlug } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function loadProducts() {
@@ -39,19 +42,20 @@ export function ProductsPage() {
   }, []);
 
   const query = searchParams.get("q")?.trim() ?? "";
-  const categoria = searchParams.get("categoria") ?? "Todos";
+  const categoryParam = searchParams.get("categoria");
+  const routeCategory = categories.find((category) => category.slug === categorySlug);
+  const queryCategory = categories.find((category) => category.name === categoryParam);
+  const selectedCategory = categorySlug ? routeCategory : queryCategory;
+  const categoria = selectedCategory?.name ?? "Todos";
   const sort = (searchParams.get("ordem") as SortValue) || "destaque";
   const onlyOffers = searchParams.get("ofertas") === "1";
 
-  const allCategories = useMemo(
-    () => ["Todos", ...Array.from(new Set(allProducts.map((p) => p.category)))],
-    [allProducts],
-  );
+  const allCategories = ["Todos", ...categories.map((category) => category.name)];
 
   const products = useMemo(() => {
     const filtered = allProducts.filter((product) => {
       const matchesCategory =
-        categoria === "Todos" || product.category === categoria;
+        !selectedCategory || product.categoryId === selectedCategory.categoryId;
       const matchesQuery =
         query.length === 0 ||
         product.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -75,7 +79,7 @@ export function ProductsPage() {
           return 0;
       }
     });
-  }, [allProducts, categoria, onlyOffers, query, sort]);
+  }, [allProducts, onlyOffers, query, selectedCategory, sort]);
 
   function updateParams(updates: Record<string, string | null>) {
     const next = new URLSearchParams(searchParams);
@@ -86,11 +90,37 @@ export function ProductsPage() {
     setSearchParams(next);
   }
 
+  function selectCategory(name: string) {
+    const next = new URLSearchParams(searchParams);
+    next.delete("categoria");
+    const target = categories.find((category) => category.name === name);
+    const path = target?.href ?? "/produtos";
+    const queryString = next.toString();
+    navigate(queryString ? `${path}?${queryString}` : path);
+  }
+
   if (loading) {
     return (
       <p className="section-container py-20 text-center">
         Carregando produtos...
       </p>
+    );
+  }
+
+  if (categorySlug && !routeCategory) {
+    return (
+      <section className="section-container py-20 text-center">
+        <h1 className="text-2xl font-bold">Categoria não encontrada</h1>
+        <p className="mt-2 text-muted-foreground">
+          Essa categoria não existe ou não está disponível.
+        </p>
+        <Button
+          render={<Link to="/produtos" />}
+          className="mt-6 bg-nexora text-primary-foreground hover:bg-nexora/90"
+        >
+          Ver todos os produtos
+        </Button>
+      </section>
     );
   }
 
@@ -105,15 +135,23 @@ export function ProductsPage() {
           <div className="flex max-w-2xl flex-col gap-4">
             <Badge variant="nexora" className="w-fit gap-1.5 px-3 py-1">
               <Zap className="size-3" />
-              Catálogo Nexora
+              {selectedCategory ? "Categoria" : "Catálogo Nexora"}
             </Badge>
             <h1 className="text-4xl leading-[1.1] font-bold tracking-tight text-balance sm:text-5xl">
-              Produtos para{" "}
-              <span className="text-nexora nexora-text-glow">ir além.</span>
+              {selectedCategory ? (
+                <span className="text-nexora nexora-text-glow">
+                  {selectedCategory.name}
+                </span>
+              ) : (
+                <>
+                  Produtos para{" "}
+                  <span className="text-nexora nexora-text-glow">ir além.</span>
+                </>
+              )}
             </h1>
             <p className="max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Hardware premium, periféricos e componentes selecionados com o
-              mesmo padrão da loja: entrega rápida e condições exclusivas.
+              {selectedCategory?.description ??
+                "Hardware premium, periféricos e componentes selecionados com o mesmo padrão da loja: entrega rápida e condições exclusivas."}
             </p>
           </div>
         </div>
@@ -127,7 +165,9 @@ export function ProductsPage() {
                 Catálogo
               </p>
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                {onlyOffers ? "Ofertas da semana" : "Todos os produtos"}
+                {onlyOffers
+                  ? "Ofertas da semana"
+                  : selectedCategory?.name ?? "Todos os produtos"}
               </h2>
               <p className="text-muted-foreground">
                 {products.length}{" "}
@@ -190,7 +230,7 @@ export function ProductsPage() {
                 <button
                   key={category}
                   type="button"
-                  onClick={() => updateParams({ categoria: category })}
+                  onClick={() => selectCategory(category)}
                   className={cn(
                     "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                     isActive
@@ -219,7 +259,9 @@ export function ProductsPage() {
                 Nenhum produto encontrado
               </h3>
               <p className="mt-2 max-w-md text-sm text-muted-foreground">
-                Ajuste os filtros ou limpe a busca para ver o catálogo completo.
+                {selectedCategory
+                  ? "Nenhum produto encontrado nesta categoria."
+                  : "Ajuste os filtros ou limpe a busca para ver o catálogo completo."}
               </p>
               <Button
                 render={<Link to="/produtos" />}
