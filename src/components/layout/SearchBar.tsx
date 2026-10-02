@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react"
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface SearchBarProps {
@@ -45,10 +46,10 @@ export function SearchBar({
   }
 
   return (
-    <form className={cn("relative w-full", className)} onSubmit={handleSubmit}>
+    <form className={cn("group relative w-full", className)} onSubmit={handleSubmit} role="search">
       <Search
         className={cn(
-          "pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground",
+          "pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-nexora",
           compact ? "size-4" : "size-4.5"
         )}
         aria-hidden
@@ -61,11 +62,22 @@ export function SearchBar({
         aria-label="Buscar produtos"
         className={cn(
           "border-border/60 bg-secondary/50 pl-10 transition-all",
+          "pr-11",
           "hover:border-nexora/30 hover:bg-secondary/80",
           "focus-visible:border-nexora/50 focus-visible:bg-secondary/80 focus-visible:ring-nexora/20",
           compact ? "h-9 text-sm" : "h-10 md:h-11"
         )}
       />
+      <Button
+        type="submit"
+        variant="ghost"
+        size="icon-sm"
+        aria-label="Buscar"
+        className="absolute top-1/2 right-1.5 -translate-y-1/2 text-muted-foreground transition-colors hover:text-nexora"
+      >
+        <span className="sr-only">Buscar</span>
+        <Search className="size-4" aria-hidden="true" />
+      </Button>
     </form>
   )
 }

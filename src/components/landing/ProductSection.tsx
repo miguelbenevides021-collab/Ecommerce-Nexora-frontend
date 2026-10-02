@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getProducts } from "@/services/productService";
 import { adaptProduct } from "@/lib/adaptProduct";
 import type { Product } from "@/types";
+import { Reveal } from "@/components/motion/Reveal";
 
 export function ProductSection() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -34,7 +35,7 @@ export function ProductSection() {
       className="border-y border-border/40 bg-secondary/20 py-16 md:py-20"
     >
       <div className="section-container">
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-12">
+        <Reveal className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-12">
           <div className="space-y-3">
             <p className="text-sm font-medium tracking-wider text-nexora uppercase">
               Seleção especial
@@ -55,12 +56,14 @@ export function ProductSection() {
             Ver todos
             <ArrowRight className="size-4" data-icon="inline-end" />
           </Button>
-        </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {loading ? <p className="text-sm text-muted-foreground">Carregando produtos...</p> : null}
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {featuredProducts.map((product, index) => (
+            <Reveal key={product.id} delay={(index % 4) * 70} className="h-full">
+              <ProductCard product={product} />
+            </Reveal>
           ))}
           {!loading && featuredProducts.length === 0 ? (
             <p className="text-sm text-muted-foreground">Não foi possível carregar os produtos agora.</p>

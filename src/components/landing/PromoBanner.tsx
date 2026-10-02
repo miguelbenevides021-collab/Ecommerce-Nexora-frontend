@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import setupcompleto from "../../assets/setupcompleto.webp";
+import setupcompleto from "../../assets//foto-hero.jpg";
+import { Reveal } from "@/components/motion/Reveal";
 export function PromoBanner() {
   return (
     <section className="py-16 md:py-20">
       <div className="section-container">
-        <div className="relative overflow-hidden rounded-2xl border border-nexora/20 bg-card">
+        <Reveal className="relative overflow-hidden rounded-2xl border border-nexora/20 bg-card">
           {/* Background */}
           <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-nexora/15 via-transparent to-nexora/5" />
           <div className="pointer-events-none absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-nexora/10 blur-3xl" />
@@ -79,7 +80,7 @@ export function PromoBanner() {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

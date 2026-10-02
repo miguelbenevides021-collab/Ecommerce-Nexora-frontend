@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Cpu, Shield, Truck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import placadevideo from "../../assets/RTX5070.webp";
+import heroimage from "../../assets//fotohero2.jpg";
 const highlights = [
   { icon: Truck, label: "Entrega em 48h" },
   { icon: Shield, label: "Garantia oficial" },
@@ -74,13 +74,13 @@ export function Hero() {
 
           {/* Visual */}
           <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-            <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-6 md:aspect-[4/3] lg:aspect-square">
-              <div className="absolute inset-0 bg-linear-to-br from-nexora/10 via-transparent to-transparent" />
+            <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-card/50 md:aspect-[4/3] lg:aspect-square">
+              <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-br from-nexora/10 via-transparent to-transparent" />
 
               <img
-                src={placadevideo}
+                src={heroimage}
                 alt="Placa de vídeo GeForce RTX em destaque"
-                className="relative z-10 h-full w-full object-contain drop-shadow-2xl transition-transform duration-700 hover:scale-[1.02]"
+                className="absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
                 loading="eager"
               />
 
@@ -89,7 +89,7 @@ export function Hero() {
                 <p className="text-[10px] tracking-wider text-muted-foreground uppercase">
                   Destaque
                 </p>
-                <p className="text-sm font-semibold">RTX 5070 Series</p>
+                <p className="text-sm font-semibold">Computador Gamer</p>
               </div>
 
               <div className="absolute right-4 bottom-4 z-20 rounded-lg border border-nexora/30 bg-background/90 px-4 py-3 backdrop-blur-sm">

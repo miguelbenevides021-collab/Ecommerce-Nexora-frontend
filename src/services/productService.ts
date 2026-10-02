@@ -1,4 +1,5 @@
-import { API_URL, apiFetch } from "@/lib/api";
+import { API_URL } from "@/config";
+import { apiFetch } from "@/lib/api";
 import type { ApiCategory, ApiProduct } from "@/types";
 
 export async function getProducts(): Promise<ApiProduct[]> {

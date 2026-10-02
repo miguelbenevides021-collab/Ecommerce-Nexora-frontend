@@ -1,4 +1,6 @@
-export const API_URL = "http://localhost:3000";
+import { API_URL } from "@/config";
+
+export { API_URL };
 export const TOKEN_KEY = "nexora_token";
 
 export class ApiError extends Error {

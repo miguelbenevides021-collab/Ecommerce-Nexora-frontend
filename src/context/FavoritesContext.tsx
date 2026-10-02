@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 interface FavoritesContextValue {
   favoriteIds: Set<string>;
@@ -9,7 +9,23 @@ interface FavoritesContextValue {
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
 export function FavoritesProvider({ children }: { children: ReactNode }) {
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => new Set());
+  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(() => {
+    try {
+      const saved = localStorage.getItem("nexora:favorites");
+      const ids: unknown = saved ? JSON.parse(saved) : [];
+      return new Set(Array.isArray(ids) ? ids.filter((id): id is string => typeof id === "string") : []);
+    } catch {
+      return new Set();
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("nexora:favorites", JSON.stringify([...favoriteIds]));
+    } catch {
+      // Favorites remain available for the current session when storage is unavailable.
+    }
+  }, [favoriteIds]);
 
   const isFavorite = useCallback(
     (productId: string | number) => favoriteIds.has(String(productId)),

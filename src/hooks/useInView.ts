@@ -10,6 +10,11 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
     const el = ref.current
     if (!el) return
 
+    if (!("IntersectionObserver" in window)) {
+      setInView(true)
+      return
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Heart, LoaderCircle, ShoppingCart, Star } from "lucide-react";
+import { Check, Heart, LoaderCircle, ShoppingCart, Star } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import type { Product } from "@/types";
 import { formatCurrency } from "@/lib/format";
@@ -17,6 +17,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const { isAuthenticated } = useAuth();
   const { addItem, isMutating } = useCart();
@@ -33,8 +34,11 @@ export function ProductCard({ product }: ProductCardProps) {
     }
 
     setIsAdding(true);
+    setJustAdded(false);
     try {
       await addItem(product);
+      setJustAdded(true);
+      window.setTimeout(() => setJustAdded(false), 1800);
     } catch (error) {
       setAddError(
         error instanceof Error
@@ -79,7 +83,7 @@ export function ProductCard({ product }: ProductCardProps) {
           size="icon-sm"
           className={cn(
             "absolute right-3 bottom-3 z-10 bg-background/80 backdrop-blur-sm transition-all",
-            "opacity-0 group-hover:opacity-100",
+            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100",
             favorite && "opacity-100 text-red-400",
           )}
           aria-label={
@@ -156,12 +160,16 @@ export function ProductCard({ product }: ProductCardProps) {
         >
           {isAdding ? (
             <LoaderCircle className="size-4 animate-spin" data-icon="inline-start" />
+          ) : justAdded ? (
+            <Check className="size-4" data-icon="inline-start" />
           ) : (
             <ShoppingCart className="size-4" data-icon="inline-start" />
           )}
           {/^\d+$/.test(product.id)
             ? isAdding
               ? "Adicionando..."
+              : justAdded
+                ? "Adicionado"
               : "Adicionar ao carrinho"
             : "Indisponível"}
         </Button>

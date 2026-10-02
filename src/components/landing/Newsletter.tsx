@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react"
 import { Check, Mail, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Reveal } from "@/components/motion/Reveal"
 
 const perks = ["Ofertas exclusivas", "Lançamentos", "Promoções", "Novidades"]
 
@@ -18,7 +19,7 @@ export function Newsletter() {
   return (
     <section className="py-16 md:py-20">
       <div className="section-container">
-        <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 px-6 py-10 md:px-12 md:py-14">
+        <Reveal className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 px-6 py-10 md:px-12 md:py-14">
           <div className="pointer-events-none absolute -top-24 right-0 h-48 w-48 rounded-full bg-nexora/8 blur-3xl" />
 
           <div className="relative mx-auto max-w-2xl text-center">
@@ -79,7 +80,7 @@ export function Newsletter() {
               Sem spam. Cancele quando quiser.
             </p>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   )

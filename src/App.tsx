@@ -18,6 +18,7 @@ import { AdminLayout } from "@/pages/admin/AdminLayout";
 import { AdminCategoriesPage } from "@/pages/admin/AdminPages";
 import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
 import { AdminOrdersPage } from "@/pages/admin/AdminOrdersPage";
+import { InstitutionalPage } from "@/pages/InstitutionalPage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,18 @@ const router = createBrowserRouter([
       { path: "/produtos", element: <ProductsPage /> },
       { path: "/produtos/:categorySlug", element: <ProductsPage /> },
       { path: "/products/:productId", element: <ProductDetailsPage /> },
+      { path: "/sobre", element: <InstitutionalPage page="sobre" /> },
+      { path: "/trabalhe-conosco", element: <InstitutionalPage page="trabalhe-conosco" /> },
+      { path: "/blog", element: <InstitutionalPage page="blog" /> },
+      { path: "/sustentabilidade", element: <InstitutionalPage page="sustentabilidade" /> },
+      { path: "/ajuda", element: <InstitutionalPage page="ajuda" /> },
+      { path: "/rastrear-pedido", element: <InstitutionalPage page="rastrear-pedido" /> },
+      { path: "/trocas-e-devolucoes", element: <InstitutionalPage page="trocas-e-devolucoes" /> },
+      { path: "/contato", element: <InstitutionalPage page="contato" /> },
+      { path: "/privacidade", element: <InstitutionalPage page="privacidade" /> },
+      { path: "/termos", element: <InstitutionalPage page="termos" /> },
+      { path: "/cookies", element: <InstitutionalPage page="cookies" /> },
+      { path: "/garantia", element: <InstitutionalPage page="garantia" /> },
       {
         path: "/login",
         element: (

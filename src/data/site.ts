@@ -44,28 +44,28 @@ export const footerLinks: FooterLinkGroup[] = [
   {
     title: "Institucional",
     links: [
-      { label: "Sobre a Nexora", href: "#" },
-      { label: "Trabalhe conosco", href: "#" },
-      { label: "Blog de tecnologia", href: "#" },
-      { label: "Sustentabilidade", href: "#" },
+      { label: "Sobre a Nexora", href: "/sobre" },
+      { label: "Trabalhe conosco", href: "/trabalhe-conosco" },
+      { label: "Blog de tecnologia", href: "/blog" },
+      { label: "Sustentabilidade", href: "/sustentabilidade" },
     ],
   },
   {
     title: "Atendimento",
     links: [
-      { label: "Central de ajuda", href: "#" },
-      { label: "Rastrear pedido", href: "#" },
-      { label: "Trocas e devoluções", href: "#" },
-      { label: "Fale conosco", href: "#" },
+      { label: "Central de ajuda", href: "/ajuda" },
+      { label: "Rastrear pedido", href: "/rastrear-pedido" },
+      { label: "Trocas e devoluções", href: "/trocas-e-devolucoes" },
+      { label: "Fale conosco", href: "/contato" },
     ],
   },
   {
     title: "Políticas",
     links: [
-      { label: "Privacidade", href: "#" },
-      { label: "Termos de uso", href: "#" },
-      { label: "Política de cookies", href: "#" },
-      { label: "Garantia legal", href: "#" },
+      { label: "Privacidade", href: "/privacidade" },
+      { label: "Termos de uso", href: "/termos" },
+      { label: "Política de cookies", href: "/cookies" },
+      { label: "Garantia legal", href: "/garantia" },
     ],
   },
   {
